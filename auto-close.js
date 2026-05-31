@@ -1,41 +1,54 @@
-// index.js – GoSpeed JS extension
+const { gospeed, storage } = await import('@gospeed/base');
 
-export async function onLoad(ctx) {
-  const { api, logger } = ctx;
+let checkInterval = null;
+let wasIdle = false;
 
-  logger.info('Auto-close extension loaded');
+async function onStart() {
+  // Monitor download state changes
+  gopeer.onDownloadStateChanged(async (event) => {
+    await checkIdle();
+  });
 
-  // Poll tasks every 2 seconds
-  const interval = setInterval(async () => {
-    try {
-      const tasks = await api.task.list({});
-      const running = tasks.filter(t => t.status === 'running' || t.status === 'waiting');
+  // Also check periodically in case of batch completions
+  checkInterval = setInterval(checkIdle, 2000);
+}
 
-      if (running.length === 0 && tasks.length > 0) {
-        logger.info('No active tasks, exiting GoSpeed in 2s...');
-        clearInterval(interval);
-
-        setTimeout(async () => {
-          const verify = await api.task.list({});
-          const stillRunning = verify.filter(t => t.status === 'running' || t.status === 'waiting');
-          if (stillRunning.length === 0) {
-            await api.system.exit();
-          }
-        }, 2000);
-      }
-    } catch (e) {
-      logger.error('Auto-close check failed: ' + e.message);
+async function checkIdle() {
+  try {
+    const downloads = await gospeed.download.getList({ 
+      status: ['running', 'paused', 'waiting'] 
+    });
+    
+    const hasActiveDownloads = downloads && downloads.length > 0;
+    
+    if (!hasActiveDownloads && !wasIdle) {
+      // All downloads finished - close Gopeed after short delay
+      setTimeout(async () => {
+        // Verify still no active downloads
+        const verifyDownloads = await gospeed.download.getList({ 
+          status: ['running', 'paused', 'waiting'] 
+        });
+        
+        if (!verifyDownloads || verifyDownloads.length === 0) {
+          await gospeed.system.exit();
+        }
+      }, 1000);
+      wasIdle = true;
+    } else if (hasActiveDownloads) {
+      wasIdle = false;
     }
-  }, 2000);
-
-  // Save handle for cleanup
-  ctx.state.interval = interval;
-}
-
-export async function onUnload(ctx) {
-  const { state, logger } = ctx;
-  if (state.interval) {
-    clearInterval(state.interval);
+  } catch (error) {
+    console.error('Auto-close check failed:', error);
   }
-  logger.info('Auto-close extension unloaded');
 }
+
+async function onStop() {
+  if (checkInterval) {
+    clearInterval(checkInterval);
+  }
+}
+
+export default {
+  onStart,
+  onStop
+};
