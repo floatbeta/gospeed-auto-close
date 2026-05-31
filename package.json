@@ -1,7 +1,7 @@
 {
   "name": "gospeed-auto-close",
   "version": "1.0.0",
-  "main": "auto-close.js",
+  "main": "index.js",
   "repository": "https://github.com/floatbeta/gospeed-auto-close",
   "keywords": ["gospeed-extension"]
 }
