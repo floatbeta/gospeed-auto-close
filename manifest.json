@@ -2,6 +2,6 @@
   "name": "Auto Close on Complete",
   "version": "1.0.0",
   "description": "Exit GoSpeed when all tasks complete",
-  "entry": "index.js",
+  "entry": "auto-close.js",
   "manifest_version": 1
 }
