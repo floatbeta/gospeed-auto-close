@@ -1,8 +1,24 @@
 {
-  "name": "Auto Close on Complete",
-  "title": "gopeed extension auto-close",
+  "name": "gopeed-extension-auto-close",
+  "author": "floatbeta",
+  "title": "Auto Close When All Tasks Complete",
+  "description": "Exit Gopeed automatically when there are no active tasks left.",
+  "icon": "",
   "version": "1.0.0",
-  "description": "Exit GoSpeed when all tasks complete",
-  "entry": "auto-close.js",
-  "manifest_version": 1
+  "homepage": "",
+  "repository": {
+    "url": ""
+  },
+  "scripts": [
+    {
+      "event": "onResolve",
+      "match": {
+        "urls": [
+          "<all_urls>"
+        ]
+      },
+      "entry": "index.js"
+    }
+  ],
+  "settings": []
 }
