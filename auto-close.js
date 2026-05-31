@@ -1,4 +1,4 @@
-const { gospeed, storage } = await import('@gospeed/base');
+const { gopeed, storage } = await import('@gopeed/base');
 
 let checkInterval = null;
 let wasIdle = false;
@@ -15,7 +15,7 @@ async function onStart() {
 
 async function checkIdle() {
   try {
-    const downloads = await gospeed.download.getList({ 
+    const downloads = await gopeed.download.getList({ 
       status: ['running', 'paused', 'waiting'] 
     });
     
@@ -25,12 +25,12 @@ async function checkIdle() {
       // All downloads finished - close Gopeed after short delay
       setTimeout(async () => {
         // Verify still no active downloads
-        const verifyDownloads = await gospeed.download.getList({ 
+        const verifyDownloads = await gopeed.download.getList({ 
           status: ['running', 'paused', 'waiting'] 
         });
         
         if (!verifyDownloads || verifyDownloads.length === 0) {
-          await gospeed.system.exit();
+          await gopeed.system.exit();
         }
       }, 1000);
       wasIdle = true;
@@ -51,4 +51,4 @@ async function onStop() {
 export default {
   onStart,
   onStop
-};
+};v
