@@ -1,5 +1,6 @@
 {
   "name": "Auto Close on Complete",
+  "title": "gopeed extension auto-close",
   "version": "1.0.0",
   "description": "Exit GoSpeed when all tasks complete",
   "entry": "auto-close.js",
